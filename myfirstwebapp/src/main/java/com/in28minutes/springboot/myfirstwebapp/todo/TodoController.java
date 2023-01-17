@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import java.time.LocalDate;
 import java.util.List;
 
-@Controller
+//@Controller
 @SessionAttributes("name")
 public class TodoController {
     private TodoService todoService;
@@ -23,14 +23,20 @@ public class TodoController {
 
     @RequestMapping("list-todos")
     public String listAllTodos(ModelMap model){
-        List<Todo> todos = todoService.findByUsername("in28minutes");
+        String username = getLoggedInUsername(model);
+        List<Todo> todos = todoService.findByUsername(username);
         model.put("todos", todos);
+
         return "listTodos";
+    }
+
+    private String getLoggedInUsername(ModelMap model) {
+        return (String)model.get("name");
     }
 
     @RequestMapping(value="add-todo", method= RequestMethod.GET)
     public String showNewTodoPage(ModelMap model){
-        String username = (String)model.get("name");
+        String username = getLoggedInUsername(model);
         Todo todo = new Todo(0, username, "", LocalDate.now().plusYears(1), false);
         model.put("todo", todo);
         return "todo";
